@@ -100,7 +100,10 @@ int commandProcess(const string& recvbuf, string& sendbuf)
             return -2;
         }
         else
+        {
             changeFile(stoi(args[0]), args[1]);
+            sendbuf += "Changed row #" + args[0] + " to " + args[1];
+        }
     }
 
     return 0;
@@ -191,6 +194,7 @@ int main()
 
         try
         {
+            cout << "Recieved:" << buf << endl;
             responseCode = bufferProcess(buf, strbuf);
         }
         catch (...)
@@ -199,14 +203,17 @@ int main()
         }
 
         cout << strbuf << endl;
+        if (responseCode == -1)
+            return 0;
+
         getline(cin, strbuf);
         bytes = SOCKET_ERROR;
+        strcpy_s(buf, strbuf.c_str());
 
         while (bytes == SOCKET_ERROR)
-        {
-            strcpy_s(buf, strbuf.c_str());
             bytes = send(ConnectSocket, buf, strbuf.length()+1, 0);
-        }
+
+        cout << "Sent:" << buf << endl;
     }
 
     WSACleanup();

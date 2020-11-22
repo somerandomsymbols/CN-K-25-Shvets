@@ -135,21 +135,28 @@ int bufferProcess(const string& recvbuf, string& sendbuf)
 
 int main()
 {
+
     //----------------------
     // Initialize Winsock.
-
     ifstream fi;
+    ofstream fo;
     fi.open("serverFile.txt");
+    fo.open("D:/c/kubick/labs/CN2/CN2Client/clientFile.txt");
+    cout << "File:\n";
 
     while (!fi.eof())
     {
         string s;
         getline(fi, s);
+        fo << s;
+        cout << s << endl;
         serverFile.push_back(s);
         clientFile.push_back(s);\
     }
 
+    fo.close();
     fi.close();
+    cout << "File End.\n";
 
     WSADATA wsaData;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -218,6 +225,7 @@ int main()
     char buf[256];
     strcpy_s(buf, strbuf.c_str());
     send(AcceptSocket, strbuf.c_str(), strbuf.length()+1, 0);
+    cout << "Sent:" << strbuf << endl;
 
     while (responseCode != -1)
     {
@@ -230,6 +238,7 @@ int main()
 
         try
         {
+            cout << "Recieved:" << buf << endl;
             responseCode = bufferProcess(buf, strbuf);
         }
         catch (...)
@@ -238,12 +247,12 @@ int main()
         }
 
         bytes = SOCKET_ERROR;
+        strcpy_s(buf, strbuf.c_str());
 
         while (bytes == SOCKET_ERROR)
-        {
-            strcpy_s(buf, strbuf.c_str());
             bytes = send(AcceptSocket, buf, strbuf.length()+1, 0);
-        }
+
+        cout << "Sent:" << buf << endl;
     }
 
     WSACleanup();
